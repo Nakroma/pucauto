@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 
 from __future__ import print_function
 
@@ -34,7 +34,7 @@ def print_pucauto():
     |    ___||       ||      _||       ||       |  |   |  |  |_|  |
     |   |    |       ||     |_ |   _   ||       |  |   |  |       |
     |___|    |_______||_______||__| |__||_______|  |___|  |_______|
-    pucauto.com                                              v0.4.3
+    pucauto.com                                              v0.4.4
     github.com/tomreece/pucauto
     @pucautobot on Twitter
 
@@ -117,8 +117,8 @@ def send_card(card, add_on=False):
     Returns True if the card was sent, False otherwise.
     """
 
-    if CONFIG.get("DEBUG"):
-        print("  DEBUG: skipping send on '{}'".format(card["name"]))
+    if CONFIG.get("debug"):
+        print(u"  DEBUG: Skipping send of '{}'".format(card["name"]))
         return False
 
     # Go to the /trades/sendcard/******* page first to secure the trade
@@ -131,18 +131,18 @@ def send_card(card, add_on=False):
             reason = DRIVER.find_element_by_tag_name("h3").text
             # Indented for readability because this is part of a bundle and there
             # are header/footer messages
-            print("  Failed to send {}. Reason: {}".format(card["name"], reason))
+            print(u"  Failed to send {}. Reason: {}".format(card["name"], reason))
         return False
 
     # Then go to the /trades/confirm/******* page to confirm the trade
     DRIVER.get(card["href"].replace("sendcard", "confirm"))
 
     if add_on:
-        print("Added on {} to an unshipped trade for {} PucaPoints!".format(card["name"], card["value"]))
+        print(u"Added on {} to an unshipped trade for {} PucaPoints!".format(card["name"], card["value"]))
     else:
         # Indented for readability because this is part of a bundle and there
         # are header/footer messages
-        print("  Sent {} for {} PucaPoints!".format(card["name"], card["value"]))
+        print(u"  Sent {} for {} PucaPoints!".format(card["name"], card["value"]))
 
     return True
 
@@ -192,7 +192,6 @@ def find_and_send_add_ons():
 
     # Sort by highest value to send those cards first
     sorted_cards = sorted(cards, key=lambda k: k["value"], reverse=True)
-
 
     for card in sorted_cards:
         send_card(card, True)
@@ -336,7 +335,7 @@ def complete_trades(highest_value_bundle):
     member_name = highest_value_bundle[1]["name"]
     member_points = highest_value_bundle[1]["points"]
     bundle_value = highest_value_bundle[1]["value"]
-    print("Found {} card(s) worth {} points to trade to {} who has {} points...".format(
+    print(u"Found {} card(s) worth {} points to trade to {} who has {} points...".format(
         len(sorted_cards), bundle_value, member_name, member_points))
 
     success_count = 0
