@@ -345,11 +345,46 @@ def complete_trades(highest_value_bundle):
         if send_card(card):
             success_value += card["value"]
             success_count += 1
-
+            
     print("Successfully sent {} out of {} cards worth {} points!".format(
         success_count, len(sorted_cards), success_value))
 
+    # See if enough cards have made it trough
+    if success_value >= CONFIG["min_value"]:
+        print("The successful shipping value is under your minimum value, removing cards...")
+        remove_unshipped_trades(member_name)
+        
+        
+def remove_unshipped_trades(member_name):
+    """Removes unshipped cards from a specific member.
+    
+    Args:
+    member_name - A string how the member is called
+    """
+    
+    DRIVER.get("https://pucatrade.com/trades/active")
+    
+    try:
+        DRIVER.find_element_by_css_selector("div.dataTables_filter input").send_keys(member_name + ' Unshipped')
+    except NoSuchElementException:
+        return
+    
+    # Wait a bit for the DOM to update after filtering
+    time.sleep(5)
 
+    soup = BeautifulSoup(DRIVER.page_source, "html.parser")
+
+    cancels = []
+
+    for row in soup.find_all("tr", id=lambda x: x and x.startswith("user_card_")):
+        cancel_id = row.find("td", class_="sorting_1").text
+        cancel_href = "https://pucatrade.com/trades/cancel/" + cancel_id
+        cancels.append(cancel_href)
+        
+    for cancel in cancels:
+        # Goto cancel trade link
+        DRIVER.get(cancel)
+        
 
 def find_trades():
     """The special sauce. Read the docstrings for the individual functions to
