@@ -349,7 +349,7 @@ def complete_trades(highest_value_bundle):
         success_count, len(sorted_cards), success_value))
 
     # See if enough cards have made it trough
-    if success_value >= CONFIG["min_value"]:
+    if success_value < CONFIG["min_value"]:
         print("The successful shipping value is under your minimum value, removing cards...")
         remove_unshipped_trades(member_name)
         
